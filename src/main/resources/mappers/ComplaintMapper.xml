@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ComplaintMapper">
+
+	<sql id="base_property">
+			id,
+			uuid,
+			createtime,
+			updatetime,
+			recordstatus,
+			phone,
+			province,
+			merchant,
+			product,
+			type,
+			source,
+			content,
+			category,
+			city,
+			complainttime
+	</sql>
+
+	<sql id="base_property_alias">
+				a.id,
+				a.uuid,
+				a.createtime,
+				a.updatetime,
+				a.recordstatus,
+				a.phone,
+				a.province,
+				a.merchant,
+				a.product,
+				a.type,
+				a.source,
+				a.content,
+				a.category,
+				a.city,
+				a.complainttime
+	</sql>
+
+	<sql id="edit_property">
+			<if test="uuid!=null and uuid!=''">
+				uuid = #{uuid},
+			</if>
+			<if test="createtime!=null and createtime!=''">
+				createtime = #{createtime},
+			</if>
+			<if test="updatetime!=null and updatetime!=''">
+				updatetime = #{updatetime},
+			</if>
+			<if test="recordstatus!=null">
+				recordstatus = #{recordstatus},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone = #{phone},
+			</if>
+			<if test="province!=null and province!=''">
+				province = #{province},
+			</if>
+			<if test="merchant!=null and merchant!=''">
+				merchant = #{merchant},
+			</if>
+			<if test="product!=null and product!=''">
+				product = #{product},
+			</if>
+			<if test="type!=null and type!=''">
+				type = #{type},
+			</if>
+			<if test="source!=null and source!=''">
+				source = #{source},
+			</if>
+			<if test="content!=null and content!=''">
+				content = #{content},
+			</if>
+			<if test="category!=null and category!=''">
+				category = #{category},
+			</if>
+			<if test="city!=null and city!=''">
+				city = #{city},
+			</if>
+			<if test="complainttime!=null and complainttime!=''">
+				complainttime = #{complainttime},
+			</if>
+				id = id
+	</sql>
+
+
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into complaint(
+			uuid,
+			createtime,
+			updatetime,
+			phone,
+			province,
+			merchant,
+			product,
+			type,
+			source,
+			content,
+			category,
+			city,
+			complainttime
+		) values (
+			#{uuid},
+			#{createtime},
+			#{updatetime},
+			#{phone},
+			#{province},
+			#{merchant},
+			#{product},
+			#{type},
+			#{source},
+			#{content},
+			#{category},
+			#{city},
+			#{complainttime}
+		)
+	</insert>
+
+
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from complaint
+		<include refid="edit_property"></include>
+		where
+			id = #{id}
+	</delete>
+
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  complaint
+			set
+
+			where
+				id = #{id}
+	</update>
+
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			<include refid="base_property"></include>
+		from
+			complaint
+		where
+			id = #{id}
+	</select>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				<include refid="base_property_alias"></include>
+		from
+				complaint a
+		where 1=1
+		<if test="pd.phone!=null and pd.phone !=''">
+		and (a.phone =#{pd.phone} or a.content like concat ('%',#{pd.phone},'%'))
+		</if>
+		<if test="pd.starttime!=null and pd.starttime !=''">
+		and STR_TO_DATE(a.complainttime,'%Y-%m-%d') &gt;=STR_TO_DATE(#{pd.starttime},'%Y-%m-%d')
+		</if>
+		<if test="pd.endtime!=null and pd.endtime !=''">
+		and STR_TO_DATE(a.complainttime,'%Y-%m-%d') &lt;=STR_TO_DATE(#{pd.endtime},'%Y-%m-%d')
+		</if>
+		<if test="pd.queryprovince!=null and pd.queryprovince !=''">
+		and a.province like concat ('%',#{pd.queryprovince},'%')
+		</if>
+		<if test="pd.category!=null and pd.category !=''">
+		and a.category = #{pd.category}
+		</if>
+		<if test="pd.merchant!=null and pd.merchant !=''">
+		and a.merchant = #{pd.merchant}
+		</if>
+		<if test="pd.source!=null and pd.source !=''">
+		and a.source = #{pd.source}
+		</if>
+		<if test="pd.type!=null and pd.type !=''">
+		and a.type = #{pd.type}
+		</if>
+		order by complainttime desc,id desc
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				<include refid="base_property_alias"></include>
+		from
+				complaint a
+			where 1=1
+		<if test="phone!=null and phone !=''">
+		and (a.phone =#{phone} or a.content like concat ('%',#{phone},'%'))
+		</if>
+		<if test="starttime!=null and starttime !=''">
+		and STR_TO_DATE(a.complainttime,'%Y-%m-%d') &gt;=STR_TO_DATE(#{starttime},'%Y-%m-%d')
+		</if>
+		<if test="endtime!=null and endtime !=''">
+		and STR_TO_DATE(a.complainttime,'%Y-%m-%d') &lt;=STR_TO_DATE(#{endtime},'%Y-%m-%d')
+		</if>
+		<if test="queryprovince!=null and queryprovince !=''">
+		and a.province like concat ('%',#{queryprovince},'%')
+		</if>
+		<if test="category!=null and category !=''">
+		and a.category = #{category}
+		</if>
+		<if test="merchant!=null and merchant !=''">
+		and a.merchant = #{merchant}
+		</if>
+		<if test="type!=null and type !=''">
+		and a.type=#{type}
+		</if>
+		<if test="source!=null and source !=''">
+		and a.source=#{source}
+		</if>
+		order by complainttime desc,id desc
+	</select>
+
+	<select id="queryExist" parameterType="pd" resultType="pd">
+		select
+				<include refid="base_property_alias"></include>
+		from
+				complaint a
+		where 1=1
+		and phone =#{phone}
+		<if test="province!=null and province!=''">
+		and province =#{province}
+		</if>
+		<if test="merchant!=null and merchant!=''">
+		and merchant =#{merchant}
+		</if>
+		<if test="product!=null and product!=''">
+		and product =#{product}
+		</if>
+		<if test="type!=null and type!=''">
+		and type =#{type}
+		</if>
+		<if test="source!=null and source!=''">
+		and source =#{source}
+		</if>
+		<if test="content!=null and content!=''">
+		and content =#{content}
+		</if>
+		<if test="category!=null and category!=''">
+		and category =#{category}
+		</if>
+		<if test="complainttime!=null and complainttime!=''">
+		and complainttime =#{complainttime}
+		</if>
+		limit 1
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from complaint
+		where
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<insert id="saveBatch" parameterType="java.util.List">
+		insert into complaint(
+			uuid,
+			createtime,
+			updatetime,
+			phone,
+			province,
+			merchant,
+			product,
+			type,
+			source,
+			content,
+			category,
+			complainttime
+		) values
+		 <foreach collection ="list" item="comm" index= "index" separator =",">
+		(
+			#{comm.uuid},
+			#{comm.createtime},
+			#{comm.updatetime},
+			#{comm.phone},
+			#{comm.province},
+			#{comm.merchant},
+			#{comm.product},
+			#{comm.type},
+			#{comm.source},
+			#{comm.content},
+			#{comm.category},
+			#{comm.complainttime}
+		)
+		</foreach>
+	</insert>
+
+	<!-- 统计代码开始  -->
+	<!--查询表单头部统计  -->
+	<select id="queryHead" parameterType="pd" resultType="pd">
+	select
+	<!--昨日数据  -->
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') THEN 1 ELSE 0 END),0) pretotal,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and category=1 THEN 1 ELSE 0 END),0) preone,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and category=2 THEN 1 ELSE 0 END),0) pretwo,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and category=3 THEN 1 ELSE 0 END),0) prethree,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and category=4 THEN 1 ELSE 0 END),0) prefour,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and category=5 THEN 1 ELSE 0 END),0) prefive,
+	<!--本月数据  -->
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') THEN 1 ELSE 0 END),0) monthtotal,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and category=1 THEN 1 ELSE 0 END),0) monthone,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and category=2 THEN 1 ELSE 0 END),0) monthtwo,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and category=3 THEN 1 ELSE 0 END),0) monththree,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and category=4 THEN 1 ELSE 0 END),0) monthfour,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and category=5 THEN 1 ELSE 0 END),0) monthfive,
+	<!--本年数据  -->
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') THEN 1 ELSE 0 END),0) yeartotal,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') and category=1 THEN 1 ELSE 0 END),0) yearone,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') and category=2 THEN 1 ELSE 0 END),0) yeartwo,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') and category=3 THEN 1 ELSE 0 END),0) yearthree,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') and category=4 THEN 1 ELSE 0 END),0) yearfour,
+	IFNULL(sum( case WHEN STR_TO_DATE(complainttime,'%Y') = STR_TO_DATE(#{currentday},'%Y') and category=5 THEN 1 ELSE 0 END),0) yearfive
+	from complaint
+	</select>
+
+	<select id="queryRecentThirtyDays" parameterType="pd" resultType="Integer">
+	select
+	<!--每天的数据  -->
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m-%d') = STR_TO_DATE(#{querytime},'%Y-%m-%d')
+	</select>
+
+	<select id="queryProvince" parameterType="pd" resultType="Integer">
+	select
+	<!--省份的数据  -->
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m-%d') &gt;= STR_TO_DATE(#{starttime},'%Y-%m-%d')
+	and STR_TO_DATE(complainttime,'%Y-%m-%d') &lt;= STR_TO_DATE(#{endtime},'%Y-%m-%d')
+	and province like concat('%',#{province},'%')
+	</select>
+
+	<!--最近半年的数据  -->
+	<select id="queryHalfYear" parameterType="pd" resultType="Integer">
+	select
+	<!--每月的数据  -->
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m') = STR_TO_DATE(#{querymonth},'%Y-%m')
+	</select>
+
+	<select id="queryPremonthcount" parameterType="pd" resultType="Integer">
+	select
+	<!--省份的数据  -->
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m') &gt;= STR_TO_DATE(#{starttime},'%Y-%m')
+	and STR_TO_DATE(complainttime,'%Y-%m') &lt;= STR_TO_DATE(#{endtime},'%Y-%m')
+	and province like concat('%',#{province},'%')
+	</select>
+	<!-- 根据运营商查询 -->
+	<select id="queryPremonthMerchantcount" parameterType="pd" resultType="Integer">
+	select
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m') &gt;= STR_TO_DATE(#{starttime},'%Y-%m')
+	and STR_TO_DATE(complainttime,'%Y-%m') &lt;= STR_TO_DATE(#{endtime},'%Y-%m')
+	<if test="querymerchant!='' and querymerchant!=null ">
+	and merchant =#{querymerchant}
+	</if>
+	</select>
+
+	<!-- 根据分类查询 -->
+	<select id="queryPremonthCategorycount" parameterType="pd" resultType="Integer">
+	select
+	IFNULL(count(1),0) total
+	from complaint
+	where 1=1
+	<if test="category!='' and category!=null ">
+	and category =#{category}
+	</if>
+	<if test="merchant!='' and merchant!=null ">
+	and merchant =#{merchant}
+	</if>
+	and STR_TO_DATE(complainttime,'%Y-%m') &gt;= STR_TO_DATE(#{starttime},'%Y-%m')
+	and STR_TO_DATE(complainttime,'%Y-%m') &lt;= STR_TO_DATE(#{endtime},'%Y-%m')
+	<if test="querycategory!='' and querycategory!=null ">
+	and category =#{querycategory}
+	</if>
+	</select>
+	<!-- 类型 -->
+	<select id="queryDistictType" parameterType="pd" resultType="pd">
+		select type from complaint group by type order by count(type) desc
+	</select>
+	<!-- 来源 -->
+	<select id="queryDistictSource" parameterType="pd" resultType="pd">
+		select source from complaint GROUP BY source order by count(source) desc
+	</select>
+
+
+
+		<insert id="saveBatchRefund" parameterType="java.util.List">
+		insert into complaint_refund(
+		call_id,
+		order_type,
+		phone,
+		phone_type,
+		city,
+		business_type,
+		product_name,
+		channel,
+		channel_info,
+		content,
+		accept_result,
+		cancel_order,
+		cancel_fee,
+		create_time,
+		complaint_channel,
+		cancel_fee_phone_fee,
+		cancel_fee_charge,
+		cancel_fee_type,
+		cancel_fee_time
+		) values
+		 <foreach collection ="list" item="comm" index= "index" separator =",">
+		(
+			#{comm.call_id},
+			#{comm.order_type},
+			#{comm.phone},
+			#{comm.phone_type},
+			#{comm.city},
+			#{comm.business_type},
+			#{comm.product_name},
+			#{comm.channel},
+			#{comm.channel_info},
+			#{comm.content},
+			#{comm.accept_result},
+			#{comm.cancel_order},
+			#{comm.cancel_fee},
+			#{comm.create_time},
+			#{comm.complaint_channel},
+			#{comm.cancel_fee_phone_fee},
+			#{comm.cancel_fee_charge},
+			#{comm.cancel_fee_type},
+			#{comm.cancel_fee_time}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		call_id =VALUES(call_id),
+		order_type =VALUES(order_type),
+		phone =VALUES(phone),
+		phone_type= VALUES(phone_type),
+		city =VALUES(city),
+		business_type = VALUES(business_type),
+		product_name = VALUES(product_name),
+		channel = VALUES(channel),
+		channel_info = VALUES(channel_info),
+		content = VALUES(content),
+		accept_result = VALUES(accept_result),
+		cancel_order = VALUES(cancel_order),
+		cancel_fee = VALUES(cancel_fee),
+		create_time = VALUES(create_time),
+		complaint_channel =VALUES(complaint_channel),
+		cancel_fee_phone_fee = VALUES(cancel_fee_phone_fee),
+		cancel_fee_charge = VALUES(cancel_fee_charge),
+		cancel_fee_type = VALUES(cancel_fee_type),
+		cancel_fee_time = VALUES(cancel_fee_time)
+	</insert>
+
+	<select id="refunddatalistPage" parameterType="page" resultType="pd">
+		select
+			call_id,
+			order_type,
+			phone,
+			phone_type,
+			city,
+			business_type,
+			product_name,
+			channel,
+			channel_info,
+			content,
+			accept_result,
+			cancel_order,
+			cancel_fee,
+			create_time,
+			complaint_channel,
+			cancel_fee_phone_fee,
+			cancel_fee_charge,
+			cancel_fee_type,
+			cancel_fee_time
+	from
+		complaint_refund a
+	where 1=1
+	<if test="pd.content!=null and pd.content!=''">
+		and a.phone like concat('%',#{pd.content},'%')
+	</if>
+	<if test="pd.phone_type!=null and pd.phone_type!=''">
+		and a.phone_type= #{pd.phone_type}
+	</if>
+	<if test="pd.starttime!=null and pd.starttime!=''">
+		and STR_TO_DATE(a.cancel_fee_time,'%Y-%m-%d') &gt;=STR_TO_DATE(#{pd.starttime},'%Y-%m-%d')
+	</if>
+	<if test="pd.endtime!=null and pd.endtime!=''">
+		and STR_TO_DATE(a.cancel_fee_time,'%Y-%m-%d') &lt;=STR_TO_DATE(#{pd.endtime},'%Y-%m-%d')
+	</if>
+	<if test="pd.queryprovince!=null and pd.queryprovince!=''">
+		and a.city like concat('%',#{pd.queryprovince},'%')
+	</if>
+	<if test="pd.product_name!=null and pd.product_name!=''">
+		and a.product_name = #{pd.product_name}
+	</if>
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	order by a.cancel_fee_time desc
+	</select>
+
+
+		<select id="refundlistAll" parameterType="pd" resultType="pd">
+		select
+			call_id,
+			order_type,
+			phone,
+			phone_type,
+			city,
+			business_type,
+			product_name,
+			channel,
+			channel_info,
+			content,
+			accept_result,
+			cancel_order,
+			cancel_fee,
+			create_time,
+			complaint_channel,
+			cancel_fee_phone_fee,
+			cancel_fee_charge,
+			cancel_fee_type,
+			cancel_fee_time
+	from
+		complaint_refund a
+	where 1=1
+	<if test="content!=null and content!=''">
+		and a.phone like concat('%',#{content},'%')
+	</if>
+	<if test="phone_type!=null and phone_type!=''">
+		and a.phone_type= #{phone_type}
+	</if>
+	<if test="starttime!=null and starttime!=''">
+		and STR_TO_DATE(a.cancel_fee_time,'%Y-%m-%d') &gt;=STR_TO_DATE(#{starttime},'%Y-%m-%d')
+	</if>
+	<if test="endtime!=null and endtime!=''">
+		and STR_TO_DATE(a.cancel_fee_time,'%Y-%m-%d') &lt;=STR_TO_DATE(#{endtime},'%Y-%m-%d')
+	</if>
+	<if test="queryprovince!=null and queryprovince!=''">
+		and a.city like concat('%',#{queryprovince},'%')
+	</if>
+	<if test="product_name!=null and product_name!=''">
+		and a.product_name = #{product_name}
+	</if>
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	order by a.cancel_fee_time desc
+	</select>
+
+	<!-- 退订统计,最近30天退订金额和数量 -->
+	<select id="queryRecentThirtyDaysRefund" parameterType="pd" resultType="pd">
+	SELECT
+	IFNULL(count( 1 ),0) num,
+	ROUND(SUM(cancel_fee_charge),2)	fee,
+	STR_TO_DATE( cancel_fee_time, '%Y-%m-%d' ) day
+	FROM
+	complaint_refund  a
+	where 1=1
+	<if test="starttime!=null and starttime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m-%d')   &gt;=STR_TO_DATE(#{starttime},'%Y-%m-%d')
+	</if>
+	<if test="endtime!=null and endtime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m-%d')   &lt;=STR_TO_DATE(#{endtime},'%Y-%m-%d')
+	</if>
+	<if test="product_name!=null and product_name !=''">
+	and a.product_name =#{product_name}
+	</if>
+	<if test="phone_type!=null and phone_type !=''">
+	and phone_type =#{phone_type}
+	</if>
+	<if test="daylist!=null and daylist !=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') in
+		<foreach item="item" index="index" collection="daylist" open="(" separator="," close=")">
+	                 #{item}
+		</foreach>
+	</if>
+	<if test="province!=null and province!=''">
+		and city like concat ('%',#{province},'%')
+	</if>
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+
+	GROUP BY STR_TO_DATE(cancel_fee_time,'%Y-%m-%d')
+	</select>
+
+
+	<!-- 退订统计,最近30天退订金额和数量 -->
+	<select id="queryProvinceRefund" parameterType="pd" resultType="pd">
+	SELECT
+	IFNULL(count( 1 ),0) num,
+	ROUND(SUM(cancel_fee_charge),2)	fee
+	FROM
+	complaint_refund  a
+	where 1=1
+	<if test="province!=null and province!=''">
+		and a.city like concat ('%',#{province},'%')
+	</if>
+	<if test="starttime!=null and starttime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m-%d')   &gt;=STR_TO_DATE(#{starttime},'%Y-%m-%d')
+	</if>
+	<if test="endtime!=null and endtime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m-%d')   &lt;=STR_TO_DATE(#{endtime},'%Y-%m-%d')
+	</if>
+	<if test="product_name!=null and product_name !=''">
+	and a.product_name =#{product_name}
+	</if>
+	<if test="phone_type!=null and phone_type !=''">
+	and a.phone_type =#{phone_type}
+	</if>
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	</select>
+
+	<select id="queryPremonthCategorycountRefund" parameterType="pd" resultType="pd">
+		select
+		IFNULL(count( 1 ),0) num,
+		ROUND(sum(a.cancel_fee_charge),2) value,
+		a.product_name name
+		from complaint_refund a
+		where 1=1
+		<if test="province!=null and province!=''">
+		and city like concat ('%',#{province},'%')
+		</if>
+		<if test="product_name!=null and product_name !=''">
+		and a.product_name =#{product_name}
+		</if>
+		<if test="phone_type!=null and phone_type !=''">
+		and a.phone_type =#{phone_type}
+		</if>
+		<if test="starttime!=null and starttime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m')   &gt;=STR_TO_DATE(#{starttime},'%Y-%m')
+		</if>
+		<if test="endtime!=null and endtime!=''">
+		and STR_TO_DATE(cancel_fee_time,'%Y-%m')   &lt;=STR_TO_DATE(#{endtime},'%Y-%m')
+		</if>
+		and a.cancel_fee ='1'
+		and a.cancel_fee_phone_fee !=''
+		and a.cancel_fee_charge !=''
+		GROUP BY a.product_name
+	</select>
+
+
+		<!-- 退订统计,最近30天退订金额和数量 -->
+	<select id="queryHalfYearRefund" parameterType="pd" resultType="pd">
+	SELECT
+	IFNULL(count( 1 ),0) num,
+	IFNULL(ROUND(SUM(cancel_fee_charge),2),0) fee
+	FROM
+	complaint_refund  a
+	where 1=1
+	<if test="province!=null and province!=''">
+	and city like concat ('%',#{province},'%')
+	</if>
+	<if test="product_name!=null and product_name !=''">
+	and a.product_name =#{product_name}
+	</if>
+	<if test="phone_type!=null and phone_type !=''">
+	and phone_type =#{phone_type}
+	</if>
+	<if test="querymonth!=null and querymonth!=''">
+	and STR_TO_DATE(cancel_fee_time,'%Y-%m') =STR_TO_DATE(#{querymonth},'%Y-%m')
+	</if>
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	</select>
+
+	<select id="queryDistictProductName" parameterType="pd" resultType="pd">
+	select DISTINCT(product_name) product_name from complaint_refund a
+	where 1=1
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	</select>
+
+
+	<select id="queryHeadRefund" parameterType="pd" resultType="pd">
+	select
+	<!--昨日数据  -->
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') THEN cancel_fee_charge ELSE 0 END),2),0) pretotal,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and product_name='妙趣彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) preone,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and product_name='妙趣视频彩铃精品包' THEN cancel_fee_charge ELSE 0 END),2),0) pretwo,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and product_name='视频彩铃精选包' THEN cancel_fee_charge ELSE 0 END),2),0) prethree,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and product_name='彩铃功能+乐动潮流' THEN cancel_fee_charge ELSE 0 END),2),0) prefour,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m-%d') = STR_TO_DATE(#{preday},'%Y-%m-%d') and product_name='6元视频彩铃心动会员+6元美景视频彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) prefive,
+	<!--本月数据  -->
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') THEN cancel_fee_charge ELSE 0 END),2),0) monthtotal,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and product_name='妙趣彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) monthone,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and product_name='妙趣视频彩铃精品包' THEN cancel_fee_charge ELSE 0 END),2),0) monthtwo,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and product_name='视频彩铃精选包' THEN cancel_fee_charge ELSE 0 END),2),0) monththree,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and product_name='彩铃功能+乐动潮流' THEN cancel_fee_charge ELSE 0 END),2),0) monthfour,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y-%m') = STR_TO_DATE(#{currentday},'%Y-%m') and product_name='6元视频彩铃心动会员+6元美景视频彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) monthfive,
+	<!--本年数据  -->
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') THEN cancel_fee_charge ELSE 0 END),2),0) yeartotal,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') and product_name='妙趣彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) yearone,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') and product_name='妙趣视频彩铃精品包' THEN cancel_fee_charge ELSE 0 END),2),0) yeartwo,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') and product_name='视频彩铃精选包' THEN cancel_fee_charge ELSE 0 END),2),0) yearthree,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') and product_name='彩铃功能+乐动潮流' THEN cancel_fee_charge ELSE 0 END),2),0) yearfour,
+	IFNULL(ROUND(sum( case WHEN STR_TO_DATE(cancel_fee_time,'%Y') = STR_TO_DATE(#{currentday},'%Y') and product_name='6元视频彩铃心动会员+6元美景视频彩铃' THEN cancel_fee_charge ELSE 0 END),2),0) yearfive
+	from complaint_refund a
+	where 1=1
+	and a.cancel_fee ='1'
+	and a.cancel_fee_phone_fee !=''
+	and a.cancel_fee_charge !=''
+	</select>
+
+
+	<select id="queryOrder" parameterType="string" resultType="pd">
+		SELECT
+			a.USER_PHONE,
+			a.ORDER_CODE,
+			a.ORDER_TYPE,
+			a.ORDER_TIME,
+			a.ORDER_RESULT,
+			a.ORDER_NO,
+			a.RESULT_CODE,
+			a.ERROR_CODE,
+			a.UNSUBSCRIBE_TIME,
+			a.C_ID,
+			a.ID,
+			a.P_PROVINCE,
+			a.P_CITY,
+			a.IS_ON,
+			b.C_NAME,
+			c.APPLICATION_NAME,
+			d.SALES_NAME,
+			e.PRODUCT_CODE
+		FROM
+			USER_ORDER_LOG a  JOIN cooperator_info b  ON a.c_id = b.c_id
+			    JOIN application_info c ON b.application_id = c.id
+							  LEFT JOIN application_sales d ON a.order_code=d.sales_code
+							  left join product_info e on d.id = e.sales_id
+		where 1=1
+			and a.USER_PHONE = #{phone}
+	</select>
+
+</mapper>

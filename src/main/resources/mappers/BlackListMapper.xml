@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BlackListMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into black_list(
+			phone,	
+			area,	
+			createtime,	
+			updatetime
+		) values (
+			#{phone},	
+			#{area},	
+			#{createtime},	
+			#{updatetime}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from black_list
+		where 
+			id = #{id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  black_list
+			set 
+				phone = #{phone},
+				area = #{area},
+				recordstatus = #{recordstatus},
+				createtime = #{createtime},
+				updatetime = #{updatetime},
+				id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			id,	
+			phone,	
+			area,	
+			recordstatus,	
+			createtime,	
+			updatetime
+		from 
+			black_list
+		where 
+			id = #{id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.id,	
+				a.phone,	
+				a.area,	
+				a.recordstatus,	
+				a.createtime,	
+				a.updatetime
+		from 
+				black_list a
+		where 1=1
+		<if test="pd.phone!=null and pd.phone!=''">
+			and a.phone =#{pd.phone}
+		</if>	
+		order by id desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.id,	
+				a.phone,	
+				a.area,	
+				a.recordstatus,	
+				a.createtime,	
+				a.updatetime
+		from 
+				black_list a
+		where 1=1
+		<if test="phone!=null and phone!=''">
+			and a.phone =#{phone}
+		</if>	
+		and recordstatus = 1
+		order by id desc		
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from black_list
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 根据条件查询 -->
+	<select id="findByCondition" parameterType="pd" resultType="pd">
+		select 
+			id,	
+			phone,	
+			area,	
+			recordstatus,	
+			createtime,	
+			updatetime
+		from 
+			black_list
+		where 
+			1=1
+			<if test="phone!=null and phone!=''">
+			and phone =#{phone}
+			</if>
+			and recordstatus = 1
+		limit 1	
+	</select>
+	
+	<insert id="saveBatch" parameterType="java.util.List">
+		insert into black_list(
+			phone,	
+			area,	
+			createtime,	
+			updatetime
+		) values 
+		 <foreach collection ="list" item="comm" index= "index" separator =",">
+		( 
+			#{comm.phone},	
+			#{comm.area},	
+			#{comm.createtime},	
+			#{comm.updatetime}
+		)
+		</foreach>
+	</insert>
+	
+</mapper>

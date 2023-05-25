@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ApplicationInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into APPLICATION_INFO(
+			APPLICATION_NAME,	
+			APP_KEY,	
+			APP_SECRET,	
+			CREATE_TIME
+		) values (
+			#{APPLICATION_NAME},	
+			#{APP_KEY},	
+			#{APP_SECRET},	
+			#{CREATE_TIME}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from APPLICATION_INFO
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  APPLICATION_INFO
+			set 
+				APPLICATION_NAME = #{APPLICATION_NAME},
+				APP_KEY = #{APP_KEY},
+				APP_SECRET = #{APP_SECRET},
+				CREATE_TIME = #{CREATE_TIME}
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			APPLICATION_NAME,	
+			APP_KEY,	
+			APP_SECRET,	
+			CREATE_TIME,	
+			ID
+		from 
+			APPLICATION_INFO
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.APPLICATION_NAME,	
+				a.APP_KEY,	
+				a.APP_SECRET,	
+				a.CREATE_TIME,	
+				a.ID
+		from 
+				APPLICATION_INFO a
+		where 1=1 
+			<if test="pd.name!=null and pd.name!=''">
+			       and a.APPLICATION_NAME like concat(#{pd.name},'%')
+			</if>
+			order by a.id desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.APPLICATION_NAME,	
+				a.APP_KEY,	
+				a.APP_SECRET,	
+				a.CREATE_TIME,	
+				a.ID
+		from 
+				APPLICATION_INFO a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from APPLICATION_INFO
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

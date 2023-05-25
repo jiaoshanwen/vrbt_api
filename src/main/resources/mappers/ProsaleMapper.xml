@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProsaleMapper">
+
+	<sql id="base_property">
+			sid,
+			pid,
+			onoff
+	</sql>
+	
+	<sql id="base_property_alias">
+				a.sid,
+				a.pid,
+				a.onoff
+	</sql>
+	
+	<sql id="edit_property">
+			<if test="sid!=null">	
+				sid = #{sid},
+			</if>	
+			<if test="pid!=null">	
+				pid = #{pid},
+			</if>	
+			<if test="onoff!=null">	
+				onoff = #{onoff},
+			</if>
+			
+				1 = 1
+	</sql>
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into t_province_sale(
+			sid,
+			pid,
+			onoff
+		) values (
+			#{sid},	
+			#{pid},	
+			#{onoff}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from t_province_sale
+		<include refid="edit_property"></include>
+		where 
+			sid = #{sid}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  t_province_sale
+			set 
+				onoff = #{onoff}
+			where 
+				1=1
+				and sid = #{sid}
+				and pid = #{pid}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			<include refid="base_property"></include>
+		from 
+			t_province_sale
+		where 
+			sid = #{sid}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.sid,
+				a.sname
+				<!-- b.onoff,
+				c.sales_name pname -->
+		from 
+				t_province a
+		where 1=1
+		<if test="pd.sname!='' and pd.sname!=null">
+			and	a.sname like concat('%',#{pd.sname},'%')
+		</if>		
+		<!-- 	left join t_province_sale b on a.sid = b.sid
+			left join application_sales c on b.pid = c.id
+		where 1=1 
+		<if test="pd.sname!=null and pd.sname !=''">
+		and a.sname =#{pd.sname}
+		</if>
+		<if test="pd.pid!=null">
+		and c.id =#{pd.pid}
+		</if>
+		<if test="pd.onoff!=null">
+		and b.onoff =#{pd.onoff} 
+		</if>-->
+	</select>
+	
+	<select id="queryProvincesProducts" parameterType="pd" resultType="pd">
+		select 
+			b.onoff,
+			b.pid,
+			c.sales_name pname
+		from 
+			t_province_sale b
+		left join application_sales c on b.pid = c.id	
+		where 1=1
+		<if test="sid !=null and sid!=''">
+		and b.sid =#{sid}
+		</if>
+		<if test="pid !=null and pid!=''">
+		and b.pid =#{pid}
+		</if>
+		<if test="onoff !=null and onoff!=''">
+		and b.onoff =#{onoff}
+		</if>
+	</select>
+	
+	
+	<select id="queryStatusByCondition" parameterType="pd" resultType="pd">
+		select 
+			b.onoff
+		from 
+			t_province_sale b
+		left join application_sales c on b.pid = c.id	
+		left join t_province a on a.sid =b.sid
+		where 1=1
+		<if test="sname !=null and sname!=''">
+		and a.sname like concat('%',#{sname},'%')
+		</if>
+		<if test="sales_code !=null and sales_code!=''">
+		and c.sales_code =#{sales_code}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				<include refid="base_property_alias"></include>
+		from 
+				t_province_sale a
+			where 1=1 
+	</select>
+	
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from t_province_sale
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<insert id="saveBatch" parameterType="java.util.List">
+		insert into t_province_sale(
+			sid,
+			pid,
+			onoff
+		) values 
+		 <foreach collection ="list" item="comm" index= "index" separator =",">
+		( 
+			#{comm.sid},	
+			#{comm.pid},	
+			#{comm.onoff}
+		)
+		</foreach>
+	</insert>
+	
+	<!-- 查询是否存在 -->
+	<select id="queryIsExist" parameterType="pd" resultType="pd">
+		select 
+			<include refid="base_property"></include>
+		from 
+			t_province_sale
+		where 
+			1=1
+			and sid = #{sid}
+			and pid =#{pid}
+	</select>
+	
+	<!-- 查询省份-->
+	<select id="queryProvince" parameterType="pd" resultType="pd">
+		select 
+			sid,
+			sname
+		from 
+			t_province
+	</select>
+</mapper>

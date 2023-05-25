@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserOrderLogMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd" useGeneratedKeys="true"  keyProperty="ID">
+		<selectKey resultType="int" order="AFTER" keyProperty="ID">
+            SELECT LAST_INSERT_ID() as ID
+        </selectKey>
+		insert into USER_ORDER_LOG(
+			USER_PHONE,	
+			ORDER_CODE,	
+			ORDER_TYPE,	
+			ORDER_TIME,
+			ORDER_RESULT,
+			ERROR_CODE,
+			ORDER_NO,
+			P_PROVINCE,
+			P_CITY,
+			C_ID,
+			BACK_URL,
+			RESULT_CODE,
+			IS_ON
+		) values (
+			#{USER_PHONE},	
+			#{ORDER_CODE},	
+			#{ORDER_TYPE},	
+			#{ORDER_TIME},	
+			#{ORDER_RESULT},	
+			#{ERROR_CODE},
+			#{ORDER_NO,jdbcType=VARCHAR},
+			#{P_PROVINCE,jdbcType=VARCHAR},
+			#{P_CITY,jdbcType=VARCHAR},
+			#{C_ID},
+			#{BACK_URL,jdbcType=VARCHAR},
+			#{RESULT_CODE,jdbcType=VARCHAR},
+			#{IS_ON,jdbcType=NUMERIC}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from USER_ORDER_LOG
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  USER_ORDER_LOG
+			set 
+				USER_PHONE = #{USER_PHONE},
+				ORDER_CODE = #{ORDER_CODE},
+				ORDER_TYPE = #{ORDER_TYPE},
+				ORDER_TIME = #{ORDER_TIME},
+				ORDER_RESULT = #{ORDER_RESULT},
+				ERROR_CODE = #{ERROR_CODE},
+				ORDER_NO = #{ORDER_NO,jdbcType=VARCHAR},
+				RESULT_CODE = #{RESULT_CODE,jdbcType=VARCHAR},
+				IS_ON = #{IS_ON,jdbcType=NUMERIC},
+				UNSUBSCRIBE_TIME = #{UNSUBSCRIBE_TIME,jdbcType=VARCHAR},
+				P_PROVINCE = #{P_PROVINCE,jdbcType=VARCHAR},
+				P_CITY = #{P_CITY,jdbcType=VARCHAR},
+				BACK_URL = #{BACK_URL,jdbcType=VARCHAR}
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			USER_PHONE,	
+			ORDER_CODE,	
+			ORDER_TYPE,	
+			ORDER_TIME,
+			ORDER_RESULT,
+			ERROR_CODE,	
+			ORDER_NO,
+			RESULT_CODE,
+			C_ID,
+			P_PROVINCE,
+			P_CITY,
+			ID,
+			BACK_URL
+		from 
+			USER_ORDER_LOG
+		where 
+			ID = #{ID}
+	</select>
+	
+	<select id="findByOrderNo" parameterType="pd" resultType="pd">
+		select 
+			USER_PHONE,	
+			ORDER_CODE,	
+			ORDER_TYPE,	
+			ORDER_TIME,
+			ORDER_RESULT,
+			ERROR_CODE,	
+			ORDER_NO,
+			RESULT_CODE,
+			C_ID,
+			P_PROVINCE,
+			P_CITY,
+			ID,
+			BACK_URL
+		from 
+			USER_ORDER_LOG
+		where 
+			ORDER_NO = #{ORDER_NO}
+		order by id desc limit 1
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		SELECT
+			  a.USER_PHONE,
+			  a.ORDER_CODE,
+			  a.ORDER_TYPE,
+			  a.ORDER_TIME,
+			  a.ORDER_RESULT,
+			  a.ERROR_CODE,
+			  a.ORDER_NO,
+			  a.RESULT_CODE,
+			  a.UNSUBSCRIBE_TIME,
+			  a.C_ID,
+			  a.ID,
+			  a.P_PROVINCE,
+			  a.P_CITY,
+			  a.IS_ON,
+			  a.BACK_URL,
+			  b.C_NAME,
+			  c.APPLICATION_NAME
+			FROM
+				USER_ORDER_LOG a LEFT JOIN `cooperator_info` b  ON a.c_id = b.c_id  LEFT JOIN application_info c ON b.application_id = c.id
+			where 1=1 
+				<if test="pd.userPhone!=null and pd.userPhone!=''">
+					and a.USER_PHONE like CONCAT(CONCAT('%',#{pd.userPhone}),'%')
+				</if>
+				<if test="pd.cId!=null and pd.cId!=''">
+					and a.c_id = #{pd.cId}
+				</if>
+				<if test="pd.orderType!=null and pd.orderType!=''">
+					and a.ORDER_TYPE = #{pd.orderType}
+				</if>
+				<if test="pd.aId!=null and pd.aId!=''">
+					and c.id = #{pd.aId}
+				</if>
+				<if test="pd.orderCode!=null and pd.orderCode!=''">
+					and a.result_code = #{pd.orderCode}
+				</if>
+				<if test="pd.isOn!=null and pd.isOn!=''">
+					and a.is_on = #{pd.isOn}
+				</if>
+				<if test="pd.resultCode!=null and pd.resultCode!=''">
+					<if test="pd.resultCode==1">
+						and a.ERROR_CODE = '0'
+					</if>
+					<if test="pd.resultCode==0">
+						and a.ERROR_CODE != '0'
+					</if>
+				</if>
+				<if test="pd.startTime!=null and pd.startTime!=''">
+					and a.ORDER_TIME &gt; CONCAT(#{pd.startTime},' 00:00:00')
+				</if>
+				<if test="pd.endTime!=null and pd.endTime!=''">
+					and a.ORDER_TIME &lt; CONCAT(#{pd.endTime},' 23:59:59')
+				</if>
+				<if test="pd.pProvince!=null and pd.pProvince!=''">
+					and a.P_PROVINCE = (SELECT INFO_NAME FROM provinces_city WHERE ID=#{pd.pProvince})
+				</if>
+				<if test="pd.pCity!=null and pd.pCity!=''">
+					and a.P_CITY = (SELECT INFO_NAME FROM provinces_city WHERE ID=#{pd.pCity})
+				</if>
+				order by a.id desc
+	</select>
+	
+	<select id="queryCheckOrder" parameterType="pd" resultType="pd">
+		select
+				a.USER_PHONE,	
+				a.ORDER_CODE,	
+				a.ORDER_TYPE,	
+				a.ORDER_TIME,
+				a.ORDER_RESULT,
+				a.ERROR_CODE,	
+				a.ORDER_NO,
+				a.RESULT_CODE,
+				a.C_ID,
+				a.P_PROVINCE,
+				a.P_CITY,
+				a.ID,
+				a.BACK_URL
+		from 
+				USER_ORDER_LOG a
+		where a.order_no is not null and a.error_code =0 and a.order_type=#{orderType} and a.result_code is null order by a.id desc limit 900
+	</select>
+	
+	<select id="querySuccessOrder" parameterType="pd" resultType="pd">
+		select
+				a.USER_PHONE,	
+				a.ORDER_CODE,	
+				a.ORDER_TYPE,	
+				a.ORDER_TIME,
+				a.ORDER_RESULT,
+				a.ERROR_CODE,	
+				a.ORDER_NO,
+				a.RESULT_CODE,
+				a.C_ID,
+				a.UNSUBSCRIBE_TIME,
+				a.IS_ON,
+				a.P_PROVINCE,
+				a.P_CITY,
+				a.ID,
+				a.BACK_URL
+		from 
+				USER_ORDER_LOG a
+		where 
+			a.order_no is not null and a.error_code =0 and a.result_code =0 and a.order_type in (6,7)
+			<if test="orderType!=null and orderType!=''">
+					and a.order_type=#{orderType}
+			</if>
+			<if test="orderMonth!=null and orderMonth!=''">
+					and a.ORDER_TIME like CONCAT(#{orderMonth},'%')
+			</if>
+			<if test="isOn!=null and isOn!=''">
+					and a.IS_ON = #{isOn}
+			</if>
+		order by a.id desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.USER_PHONE,	
+				a.ORDER_CODE,	
+				a.ORDER_TYPE,	
+				a.ORDER_TIME,
+				a.ORDER_RESULT,
+				a.ERROR_CODE,	
+				a.ORDER_NO,
+				a.RESULT_CODE,
+				a.UNSUBSCRIBE_TIME,
+				a.IS_ON,
+				a.C_ID,
+				a.P_PROVINCE,
+				a.P_CITY,
+				a.ID,
+				a.BACK_URL
+		from 
+				USER_ORDER_LOG a
+		where  a.error_code IN ('0','0000') AND a.`p_province` IS NULL ORDER BY id DESC limit 1000
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from USER_ORDER_LOG
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 查询昨日新增数据 -->
+	<select id="queryYesterday" parameterType="pd" resultType="pd">
+		SELECT
+			  SUM(
+			    IF(
+			      is_on = 1
+			      AND order_time LIKE CONCAT(#{orderDay},'%'),
+			      1,
+			      0
+			    )
+			  ) AS todayAdd,
+			  SUM(IF(is_on = 1, 1, 0)) AS allOrder
+			FROM
+			  USER_ORDER_LOG u
+			WHERE 1=1
+			<if test="orderType!=null and orderType!=''">
+					and u.order_type = #{orderType}
+			</if>
+	</select>
+	
+	
+	<insert id="saveOneHour" parameterType="pd">
+		   INSERT INTO YD_ONE_HOUR(
+			  ID,
+			  USER_PHONE,
+			  CANCE_TIME,
+			  ORDER_CODE,
+			  LOG_ID,
+			  ORDER_NO
+			)
+			VALUES
+			  (
+			    #{ID},
+			    #{USER_PHONE},
+			    #{CANCE_TIME},
+			    #{ORDER_CODE},
+			    #{LOG_ID},
+			    #{ORDER_NO}
+			  );
+
+	</insert>
+	
+	<insert id="saveZJOrder" parameterType="pd">
+		   INSERT INTO ZJ_STACK_ORDER(
+			  ID,
+			  ORDER_NO,
+			  YX_ORDER_NO,
+			  ADD_TIME
+			)
+			VALUES
+			  (
+			    #{ID},
+			    #{ORDER_NO},
+			    #{YX_ORDER_NO},
+			    #{ADD_TIME}
+			  );
+
+	</insert>
+	
+	<select id="findZJOrderByOrderNo" parameterType="pd" resultType="pd">
+		select 
+			ID,
+			ORDER_NO,
+			YX_ORDER_NO,
+			ADD_TIME
+		from 
+			ZJ_STACK_ORDER
+		where 
+			ORDER_NO = #{ORDER_NO}
+	</select>
+	
+</mapper>

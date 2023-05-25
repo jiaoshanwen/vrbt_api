@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CooperatorInfoMapper">
+	
+	<resultMap id="pageResultMap"  type="com.sinontech.tools.common.PageData">
+		<result column="C_ID" property="C_ID" />
+		<result column="C_NAME" property="C_NAME" />
+		<result column="LOGIN_NAME" property="LOGIN_NAME" />
+		<result column="LOGIN_PWD" property="LOGIN_PWD" />
+		<result column="LOGIN_IP" property="LOGIN_IP" />
+		<result column="PUBLIC_KEY" property="PUBLIC_KEY" />
+		<result column="PRIVATE_KEY" property="PRIVATE_KEY" />
+		<result column="QPS" property="QPS" />
+		<result column="AREA_NAME" property="AREA_NAME" />
+		<collection property="INTERFACE_LIST"  column="C_ID=C_ID" select="InterfaceAuthMapper.listInterfaceAuth"></collection>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd" useGeneratedKeys="true" keyProperty="C_ID">
+		<selectKey resultType="int" order="AFTER" keyProperty="C_ID"> 
+	        SELECT LAST_INSERT_ID() as C_ID
+	    </selectKey>
+		insert into COOPERATOR_INFO(
+			C_NAME,	
+			LOGIN_NAME,	
+			LOGIN_PWD,	
+			LOGIN_IP,	
+			CREATE_TIME,	
+			REQUEST_IP,	
+			REMARKS,	
+			STATE,	
+			LOGIN_NUM,	
+			FUNCTIONLOCAL,	
+			PUBLIC_KEY,	
+			PRIVATE_KEY,	
+			QPS,
+			AREA_NAME,
+			APPLICATION_ID
+		) values (
+			#{C_NAME},	
+			#{LOGIN_NAME},	
+			#{LOGIN_PWD},	
+			#{LOGIN_IP},	
+			#{CREATE_TIME},	
+			#{REQUEST_IP},	
+			#{REMARKS,jdbcType=VARCHAR},	
+			#{STATE,jdbcType=VARCHAR},	
+			#{LOGIN_NUM,jdbcType=NUMERIC},	
+			#{FUNCTIONLOCAL},	
+			#{PUBLIC_KEY},	
+			#{PRIVATE_KEY},	
+			#{QPS},
+			#{AREA_NAME},
+			#{APPLICATION_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from COOPERATOR_INFO
+		where 
+			C_ID = #{C_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  COOPERATOR_INFO
+			set 
+				C_NAME = #{C_NAME},	
+				LOGIN_NAME = #{LOGIN_NAME},	
+				LOGIN_PWD = #{LOGIN_PWD},	
+				LOGIN_IP = #{LOGIN_IP},	
+				CREATE_TIME = #{CREATE_TIME,jdbcType=VARCHAR},	
+				REQUEST_IP = #{REQUEST_IP},	
+				REMARKS = #{REMARKS,jdbcType=VARCHAR},	
+				STATE = #{STATE,jdbcType=VARCHAR},	
+				LOGIN_NUM = #{LOGIN_NUM,jdbcType=NUMERIC},	
+				FUNCTIONLOCAL = #{FUNCTIONLOCAL},	
+				PUBLIC_KEY = #{PUBLIC_KEY},	
+				PRIVATE_KEY = #{PRIVATE_KEY},	
+				QPS = #{QPS},
+				AREA_NAME = #{AREA_NAME},
+				APPLICATION_ID = #{APPLICATION_ID}
+			where 
+				C_ID = #{C_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			C_NAME,	
+			LOGIN_NAME,	
+			LOGIN_PWD,	
+			LOGIN_IP,	
+			CREATE_TIME,	
+			REQUEST_IP,	
+			REMARKS,	
+			STATE,	
+			LOGIN_NUM,	
+			FUNCTIONLOCAL,	
+			PUBLIC_KEY,	
+			PRIVATE_KEY,	
+			QPS,
+			AREA_NAME,
+			C_ID,
+			APPLICATION_ID
+		from 
+			COOPERATOR_INFO
+		where 
+			C_ID = #{C_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="pageResultMap">
+		select
+				a.C_NAME,	
+				a.LOGIN_NAME,	
+				a.LOGIN_PWD,	
+				a.LOGIN_IP,	
+				a.CREATE_TIME,	
+				a.REQUEST_IP,	
+				a.REMARKS,	
+				a.STATE,	
+				a.LOGIN_NUM,	
+				a.FUNCTIONLOCAL,	
+				a.PUBLIC_KEY,	
+				a.PRIVATE_KEY,	
+				a.QPS,
+				a.AREA_NAME,
+				a.C_ID,
+				a.APPLICATION_ID,
+				b.APP_KEY,
+				b.APP_SECRET,
+				b.APPLICATION_NAME
+		from 
+				COOPERATOR_INFO a left join application_info b on a.application_id=b.id
+		where 1=1
+			 <if test="pd.name!=null and pd.name!=''">
+			       and a.C_NAME like concat(#{pd.name},'%')
+			</if>
+			order by a.c_id desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultMap="pageResultMap">
+		select
+				a.C_NAME,	
+				a.LOGIN_NAME,	
+				a.LOGIN_PWD,	
+				a.LOGIN_IP,	
+				a.CREATE_TIME,	
+				a.REQUEST_IP,	
+				a.REMARKS,	
+				a.STATE,	
+				a.LOGIN_NUM,	
+				a.FUNCTIONLOCAL,	
+				a.PUBLIC_KEY,	
+				a.PRIVATE_KEY,	
+				a.QPS,
+				a.AREA_NAME,
+				a.C_ID,
+				a.APPLICATION_ID,
+				b.APP_KEY,
+				b.APP_SECRET
+		from 
+				COOPERATOR_INFO a left join application_info b on a.application_id=b.id
+		where a.state='A'
+	</select>
+	<select id="listAllByName" parameterType="pd" resultType="pd">
+		select 
+				a.C_NAME,	
+				a.LOGIN_NAME,	
+				a.LOGIN_PWD,	
+				a.LOGIN_IP,	
+				a.CREATE_TIME,	
+				a.REQUEST_IP,	
+				a.REMARKS,	
+				a.STATE,	
+				a.LOGIN_NUM,	
+				a.FUNCTIONLOCAL,	
+				a.PUBLIC_KEY,	
+				a.PRIVATE_KEY,	
+				a.QPS,
+				a.AREA_NAME,
+				a.C_ID,
+				a.APPLICATION_ID
+		from 
+			COOPERATOR_INFO a
+		where 
+			a.LOGIN_NAME=#{LOGIN_NAME}
+	</select>
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from COOPERATOR_INFO
+		where 
+			C_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

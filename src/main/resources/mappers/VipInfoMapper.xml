@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="VipInfoMapper">
+
+
+
+   <select id="queryVip" parameterType="pd" resultType="pd">
+		select
+				a.VIP_TYPE,
+				a.VIP_INFO,
+				a.ADD_TIME,
+				a.SALES_CODE
+		from
+				vip_info a
+		where 1=1 
+		    <if test="vipInfo!=null and vipInfo!=''">
+				and a.VIP_INFO = #{vipInfo}
+			</if>
+			<if test="salesCode!=null and salesCode!=''">
+				and a.SALES_CODE = #{salesCode}
+			</if>
+	</select>
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into vip_info(
+			VIP_TYPE,
+			VIP_INFO,
+			ADD_TIME,
+			SALES_CODE
+		) values (
+			#{VIP_TYPE},
+			#{VIP_INFO},
+			#{ADD_TIME},
+			#{SALES_CODE}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from vip_info
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+
+
+    <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update   vip_info  set 
+        VIP_TYPE = #{VIP_TYPE},
+        VIP_INFO = #{VIP_INFO},
+        ADD_TIME = #{ADD_TIME},
+        SALES_CODE = #{SALES_CODE}
+        where ID = #{ID}
+    </update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			VIP_TYPE,
+			VIP_INFO,
+			ADD_TIME,
+			SALES_CODE
+		from
+			vip_info
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.VIP_TYPE,
+				a.VIP_INFO,
+				a.ADD_TIME,
+				a.SALES_CODE
+		from
+				vip_info a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.VIP_TYPE,
+				a.VIP_INFO,
+				a.ADD_TIME,
+				a.SALES_CODE
+		from
+				vip_info a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from vip_info
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

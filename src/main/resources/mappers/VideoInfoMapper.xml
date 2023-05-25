@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="VideoInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into VIDEO_INFO(
+			RESNAME,	
+			RESNO,	
+			RESTYPE,	
+			PGCTYPE,	
+			RESURL,	
+			PICURL,	
+			WIDEHIGH,	
+			RATIO,
+			UPDATE_TIME,
+			VIDEOSTATUS,
+			VIDEOTYPE
+		) values (
+			#{RESNAME},	
+			#{RESNO},	
+			#{RESTYPE},	
+			#{PGCTYPE},	
+			#{RESURL},	
+			#{PICURL},	
+			#{WIDEHIGH},	
+			#{RATIO},
+			#{UPDATE_TIME},
+			#{VIDEOSTATUS},
+			#{VIDEOTYPE}
+		)
+	</insert>
+	
+	<update id="updateStatus" parameterType="pd">
+		update  VIDEO_INFO
+			set 
+				VIDEOSTATUS = #{VIDEOSTATUS}
+			where 
+				UPDATE_TIME != #{UPDATE_TIME} and VIDEOTYPE=#{VIDEOTYPE}
+	</update>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from VIDEO_INFO
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  VIDEO_INFO
+			set 
+				RESNAME = #{RESNAME},
+				RESNO = #{RESNO},
+				RESTYPE = #{RESTYPE},
+				PGCTYPE = #{PGCTYPE},
+				RESURL = #{RESURL,jdbcType=VARCHAR},
+				PICURL = #{PICURL,jdbcType=VARCHAR},
+				WIDEHIGH = #{WIDEHIGH},
+				RATIO = #{RATIO},
+				UPDATE_TIME = #{UPDATE_TIME},
+				VIDEOSTATUS = #{VIDEOSTATUS},
+				VIDEOTYPE=#{VIDEOTYPE}
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			RESNAME,	
+			RESNO,	
+			RESTYPE,	
+			PGCTYPE,	
+			RESURL,	
+			PICURL,	
+			WIDEHIGH,	
+			RATIO,	
+			ID,
+			UPDATE_TIME,
+			VIDEOSTATUS,
+			VIDEOTYPE
+		from 
+			VIDEO_INFO
+		where 
+			ID = #{ID}
+	</select>
+	<select id="findByResNo" parameterType="pd" resultType="pd">
+		select 
+			RESNAME,	
+			RESNO,	
+			RESTYPE,	
+			PGCTYPE,	
+			RESURL,	
+			PICURL,	
+			WIDEHIGH,	
+			RATIO,	
+			ID,
+			UPDATE_TIME,
+			VIDEOSTATUS,
+			VIDEOTYPE
+		from 
+			VIDEO_INFO
+		where 
+			RESNO = #{RESNO}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.RESNAME,	
+				a.RESNO,	
+				a.RESTYPE,	
+				a.PGCTYPE,	
+				a.RESURL,	
+				a.PICURL,	
+				a.WIDEHIGH,	
+				a.RATIO,	
+				a.ID,
+				a.UPDATE_TIME,
+				a.VIDEOSTATUS,
+				a.VIDEOTYPE
+		from 
+				VIDEO_INFO a
+		where 1=1 
+			<if test="pd.resName!=null and pd.resName!=''">
+				and (a.RESNAME like CONCAT(CONCAT('%',#{pd.resName}),'%') or a.RESNO like CONCAT(CONCAT('%',#{pd.resName}),'%'))
+			</if>
+			<if test="pd.videoType!=null and pd.videoType!=''">
+				and a.VIDEOTYPE = #{pd.videoType}
+			</if>
+			order by id desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.RESNAME,	
+				a.RESNO,	
+				a.RESTYPE,	
+				a.PGCTYPE,	
+				a.RESURL,	
+				a.PICURL,	
+				a.WIDEHIGH,	
+				a.RATIO,	
+				a.ID,
+				a.UPDATE_TIME,
+				a.VIDEOSTATUS,
+				a.VIDEOTYPE
+		from 
+				VIDEO_INFO a
+		where a.RESURL is null or a.RESURL =''
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from VIDEO_INFO
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

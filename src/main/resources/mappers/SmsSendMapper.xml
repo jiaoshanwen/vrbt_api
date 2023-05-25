@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SmsSendMapper">
+	<insert id="save" parameterType="pd">
+		insert into sms_send(
+			user_phone,	
+			add_time,	
+			sms_code,
+			sms_status,
+			sys_id,
+			error_code
+		) values (
+			#{USER_PHONE},
+			#{ADD_TIME},	
+			#{SMS_CODE},	
+			#{SMS_STATUS},
+			#{SYS_ID,jdbcType=VARCHAR},
+			#{ERROR_CODE}
+		)
+	</insert>
+	<update id="edit" parameterType="pd">
+		update  sms_send
+			set 
+				SMS_STATUS = #{SMS_STATUS}
+			where 
+				ID = #{ID}
+	</update>
+	<select id="getByPhone" parameterType="pd" resultType="pd">
+		select *
+		  from sms_send
+		 where USER_PHONE = #{user_phone}
+		 	and sms_code = #{sms_code}
+		   
+		 order by id desc
+
+	</select>
+	
+	<select id="getByPhoneDate" parameterType="pd" resultType="pd">
+		select *
+		  from sms_send
+		 where USER_PHONE = #{user_phone}
+		 	and ADD_TIME LIKE CONCAT(#{NOW_DATE},'%')
+		   
+		 order by id desc
+
+	</select>
+	
+		
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a."ID",
+				a."USER_PHONE",	
+				a."ADD_TIME",	
+				a."SMS_CODE",	
+				a."SMS_STATUS",	
+				a."ERROR_CODE",	
+				a."SYS_ID"
+		from 
+				"SMS_SEND" a
+		where 1=1
+		<if test="pd.USER_PHONE!='' and pd.USER_PHONE!=null">
+			and a.USER_PHONE=#{pd.USER_PHONE}
+		</if>
+        order by a."ADD_TIME" DESC
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InterfaceAuthMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into interface_auth(
+			INFO_ID,	
+			INTERFACE_ID,	
+			ADD_TIME
+		) values (
+			#{INFO_ID},	
+			#{INTERFACE_ID},	
+			#{ADD_TIME}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from interface_auth
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  interface_auth
+			set 
+				INFO_ID = #{INFO_ID},
+				INTERFACE_ID = #{INTERFACE_ID},
+				ADD_TIME = #{ADD_TIME}
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			INFO_ID,	
+			INTERFACE_ID,	
+			ADD_TIME,	
+			ID
+		from 
+			interface_auth
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.INFO_ID,	
+				a.INTERFACE_ID,	
+				a.ADD_TIME,	
+				a.ID
+		from 
+				interface_auth a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.INFO_ID,	
+				a.INTERFACE_ID,	
+				a.ADD_TIME,	
+				a.ID
+		from 
+				interface_auth a
+	</select>
+	<select id="listInterfaceAuth" parameterType="pd" resultType="pd">
+		SELECT
+	  		b.INTERFACE_NAME,	
+			b.INTERFACE_WORD,	
+			b.INTERFACE_PATH,	
+			b.INTERFACE_STATE,	
+			b.ADD_TIME,	
+			b.UPDATE_TIME,	
+			b.ID
+		FROM
+		  interface_auth a
+		  LEFT JOIN interface_info b
+		    ON a.interface_id = b.id
+		  WHERE a.`info_id`=#{C_ID}
+	</select>
+	<delete id="deleteIntegerAuth" parameterType="String">
+		delete from interface_auth
+		where 
+			info_id = #{C_ID}
+	</delete>
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from interface_auth
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InterfaceInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into INTERFACE_INFO(
+			INTERFACE_NAME,	
+			INTERFACE_WORD,	
+			INTERFACE_PATH,	
+			INTERFACE_STATE,	
+			ADD_TIME,	
+			UPDATE_TIME
+		) values (
+			#{INTERFACE_NAME},	
+			#{INTERFACE_WORD},	
+			#{INTERFACE_PATH},	
+			#{INTERFACE_STATE},	
+			#{ADD_TIME},	
+			#{UPDATE_TIME}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from INTERFACE_INFO
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  INTERFACE_INFO
+			set 
+				INTERFACE_NAME = #{INTERFACE_NAME},
+				INTERFACE_WORD = #{INTERFACE_WORD},
+				INTERFACE_PATH = #{INTERFACE_PATH},
+				INTERFACE_STATE = #{INTERFACE_STATE},
+				UPDATE_TIME = #{UPDATE_TIME}
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			INTERFACE_NAME,	
+			INTERFACE_WORD,	
+			INTERFACE_PATH,	
+			INTERFACE_STATE,	
+			ADD_TIME,	
+			UPDATE_TIME,	
+			ID
+		from 
+			INTERFACE_INFO
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.INTERFACE_NAME,	
+				a.INTERFACE_WORD,	
+				a.INTERFACE_PATH,	
+				a.INTERFACE_STATE,	
+				a.ADD_TIME,	
+				a.UPDATE_TIME,	
+				a.ID
+		from 
+				INTERFACE_INFO a
+		where 1=1 
+			<if test="pd.name!=null and pd.name!=''">
+			       and a.INTERFACE_NAME = concat(#{pd.name},'%')
+			</if>
+			order by a.id desc
+			
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.INTERFACE_NAME,	
+				a.INTERFACE_WORD,	
+				a.INTERFACE_PATH,	
+				a.INTERFACE_STATE,	
+				a.ADD_TIME,	
+				a.UPDATE_TIME,	
+				<choose>
+					 <when test="C_ID!=null and C_ID!=''">
+					 	IF(b.info_id IS NULL,0,1) as "IF_HAVE",
+					 </when>
+					 <otherwise>
+					 	0 as "IF_HAVE",
+					 </otherwise>
+				</choose>
+				a.ID
+		from 
+				INTERFACE_INFO a
+				<if test="C_ID!=null and C_ID!=''">
+					LEFT JOIN interface_auth b  ON a.id=b.interface_id  AND b.info_id=#{C_ID}
+				</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from INTERFACE_INFO
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

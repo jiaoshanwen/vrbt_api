@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into PRODUCT_INFO(
+			PRODUCT_CODE,	
+			PRODUCT_TYPE,	
+			SALES_ID,	
+			SUBSIDIARY_ID,
+			PRODUCT_STATUS,	
+			UPDATE_TIME
+		) values (
+			#{PRODUCT_CODE},	
+			#{PRODUCT_TYPE},	
+			#{SALES_ID},
+			#{SUBSIDIARY_ID},	
+			#{PRODUCT_STATUS},	
+			#{UPDATE_TIME}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from PRODUCT_INFO
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  PRODUCT_INFO
+			set 
+				PRODUCT_CODE = #{PRODUCT_CODE},
+				PRODUCT_TYPE = #{PRODUCT_TYPE},
+				SALES_ID = #{SALES_ID},
+				SUBSIDIARY_ID = #{SUBSIDIARY_ID},
+				PRODUCT_STATUS = #{PRODUCT_STATUS},
+				UPDATE_TIME = #{UPDATE_TIME}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<select id="findByProductCode" parameterType="pd" resultType="pd">
+		SELECT 
+			a.PRODUCT_CODE,	
+			a.PRODUCT_TYPE,	
+			a.SALES_ID,	
+			a.SUBSIDIARY_ID,
+			a.PRODUCT_STATUS,	
+			a.UPDATE_TIME,	
+			a.ID,
+			a.PRODUCT_DESC,
+			a.REQUEST_INFO,
+			b.SALES_CODE,
+			c.IMPL_NAME
+		FROM 
+			PRODUCT_INFO a LEFT JOIN application_sales b ON a.SALES_ID = b.id
+			LEFT JOIN product_service c ON a.service_id = c.id
+		where 
+			PRODUCT_CODE = #{PRODUCT_CODE}
+	</select>
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			PRODUCT_CODE,	
+			PRODUCT_TYPE,	
+			SALES_ID,	
+			SUBSIDIARY_ID,
+			PRODUCT_STATUS,	
+			UPDATE_TIME,	
+			ID
+		from 
+			PRODUCT_INFO
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.PRODUCT_CODE,	
+				a.PRODUCT_TYPE,	
+				a.SALES_ID,	
+				a.SUBSIDIARY_ID,
+				a.PRODUCT_STATUS,	
+				a.UPDATE_TIME,	
+				a.ID
+		from 
+				PRODUCT_INFO a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.PRODUCT_CODE,	
+				a.PRODUCT_TYPE,	
+				a.SALES_ID,	
+				a.SUBSIDIARY_ID,
+				a.PRODUCT_STATUS,	
+				a.UPDATE_TIME,	
+				a.ID
+		from 
+				PRODUCT_INFO a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from PRODUCT_INFO
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>
